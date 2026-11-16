@@ -2,6 +2,7 @@ mod agent_error;
 mod checkpoints;
 pub mod compaction;
 mod execution_context;
+mod git_path;
 mod host_tool;
 mod inbox;
 pub mod local;

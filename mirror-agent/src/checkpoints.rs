@@ -2,7 +2,6 @@
 
 use std::ffi::OsStr;
 use std::io;
-use std::os::unix::ffi::OsStrExt;
 use std::path::{Path, PathBuf};
 use std::process::{Output, Stdio};
 use std::time::Duration;
@@ -369,7 +368,7 @@ impl Git<'_> {
                 }
                 if entry[0].eq_ignore_ascii_case(&b'S') {
                     // Missing sparse-checkout files are not deletions; materialized files may be edited.
-                    match std::fs::symlink_metadata(root.join(OsStr::from_bytes(path))) {
+                    match std::fs::symlink_metadata(root.join(crate::git_path::from_bytes(path)?)) {
                         Ok(_) => {
                             skipped.extend_from_slice(path);
                             skipped.push(0);
