@@ -6,13 +6,14 @@ import asyncio
 import contextlib
 import copy
 import dataclasses
-import fcntl
 import json
 import logging
 import pathlib
 import tempfile
 from collections.abc import Awaitable, Callable, Mapping
 from typing import Literal, cast
+
+from mirror import file_lock
 
 type JsonValue = (
   None | bool | int | float | str | list[JsonValue] | dict[str, JsonValue]
@@ -242,7 +243,7 @@ class Config:
     """Apply `change` to the settings under the file lock and write atomically."""
     self.path.parent.mkdir(parents=True, exist_ok=True)
     with self.path.with_suffix('.lock').open('a') as lock:
-      fcntl.flock(lock, fcntl.LOCK_EX)
+      file_lock.exclusive(lock)
       settings = self.read()
       change(settings)
       with tempfile.NamedTemporaryFile(
